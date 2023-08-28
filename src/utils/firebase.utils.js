@@ -1,12 +1,12 @@
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
-  signInWithRedirect,
   signInWithPopup,
   GoogleAuthProvider,
+  createUserWithEmailAndPassword,
 } from "firebase/auth";
 
-import {getFirestore, doc, getDoc, setDoc} from "firebase/firestore";
+import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -27,31 +27,40 @@ googleProvider.setCustomParameters({
 });
 
 export const auth = getAuth();
+
+console.log("auth", auth);
 export const signInWithGooglePopup = () =>
   signInWithPopup(auth, googleProvider);
 
 export const db = getFirestore();
 
-export const createUserDocumentFromAuth = async(userAuth) => {
-    const userRef = doc(db, "users", userAuth.uid);
-    const userSnapshot = await getDoc(userRef)
+export const createUserDocumentFromAuth = async (userAuth, additionalInformation = {}) => {
+  const userRef = doc(db, "users", userAuth.uid);
+  const userSnapshot = await getDoc(userRef);
 
-    console.log(userSnapshot.exists());
+  console.log(userSnapshot.exists());
 
-    if (!userSnapshot.exists()) {
-      const {uid, displayName, email} = userAuth;
-      const createdAt = new Date()
-      try{
-        await setDoc(userRef,{
-            uid,
-            displayName,
-            email,
-            createdAt
-        })
-      } catch(err){
-        console.log('error creating the user: ',err);
-      }
+  if (!userSnapshot.exists()) {
+    const { uid, displayName, email } = userAuth;
+    const createdAt = new Date();
+    try {
+      await setDoc(userRef, {
+        uid,
+        displayName,
+        email,
+        createdAt,
+        ...additionalInformation
+      });
+    } catch (err) {
+      console.log("error creating the user: ", err);
     }
+  }
 
-    return userRef;
-}
+  return userRef;
+};
+
+export const createAuthUserWithEmailandPassword = async (email, password) => {
+  if (!email || !password) return;
+
+  return await createUserWithEmailAndPassword(auth, email, password);
+};
