@@ -8,7 +8,7 @@ import FormInput from "../form-input/form-input.component";
 import "./sign-up-form.styles.scss";
 
 const initialFormState = {
-  userName: "",
+  displayName: "",
   email: "",
   password: "",
   confirmPassword: "",
@@ -16,7 +16,8 @@ const initialFormState = {
 
 const SignUpForm = () => {
   const [formFields, setFormFields] = useState(initialFormState);
-  const { userName, email, password, confirmPassword } = formFields;
+  const { displayName, email, password, confirmPassword } = formFields;
+
 
   const resetFormState = () => {
     console.log("hello");
@@ -40,7 +41,7 @@ const SignUpForm = () => {
         email,
         password
       );
-      await createUserDocumentFromAuth(user, { userName });
+      await createUserDocumentFromAuth(user, { displayName });
 
       resetFormState();
     } catch (error) {
@@ -62,8 +63,8 @@ const SignUpForm = () => {
           type="text"
           onChange={handleChange}
           required
-          name="userName"
-          value={userName}
+          name="displayName"
+          value={displayName}
         />
         <FormInput
           label="Email"
